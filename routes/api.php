@@ -13,11 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::middleware('auth:api')->get('/contacts', function () {
-    return new \App\Http\Resources\ContactCollection(\App\Contact::all());
-
-});
+Route::middleware('auth:api')->get('/contacts', 'ContactController@index');
+Route::middleware('auth:api')->get('/contacts/{id}', 'ContactController@show');
+Route::middleware('auth:api')->post('/contacts', 'ContactController@store');
+Route::middleware('auth:api')->put('/contacts/{id}', 'ContactController@update');
+Route::middleware('auth:api')->delete('/contacts/{id}', 'ContactController@destroy');

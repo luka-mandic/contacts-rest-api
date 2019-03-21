@@ -1060,8 +1060,9 @@
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="267" parent="248" name="contacts_email_unique">
-      <ColNames>email</ColNames>
+    <index id="267" parent="248" name="contacts_email_user_id_unique">
+      <ColNames>email
+user_id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
@@ -1074,9 +1075,10 @@
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="270" parent="248" name="contacts_email_unique">
-      <ColNames>email</ColNames>
-      <UnderlyingIndexName>contacts_email_unique</UnderlyingIndexName>
+    <key id="270" parent="248" name="contacts_email_user_id_unique">
+      <ColNames>email
+user_id</ColNames>
+      <UnderlyingIndexName>contacts_email_user_id_unique</UnderlyingIndexName>
     </key>
     <foreign-key id="271" parent="248" name="contacts_user_id_foreign">
       <ColNames>user_id</ColNames>

@@ -20,13 +20,16 @@ class CreateContactsTable extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('profile_photo');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->boolean('favourite');
             $table->bigInteger('user_id')->unsigned();
 
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onDelete('cascade');
+
+            $table->unique(['email', 'user_id']);
+
         });
     }
 
