@@ -43,7 +43,7 @@ class LoginController extends Controller
     {
         $token = $user->createToken('token_created_by_login')->accessToken;
 
-        return view('welcome')->with(['token' => $token]);
+        return redirect('/')->with(['token' => $token]);
     }
 
     /**

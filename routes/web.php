@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::middleware('auth')->get('/', function () {
+    return view('index');
+})->name('index');
 
 Auth::routes();
 

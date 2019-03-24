@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Contact;
+use App\Http\Requests\StoreContact;
 use App\Http\Resources\ContactCollection;
 use App\Http\Resources\ContactResource;
 use Illuminate\Http\Request;
@@ -12,16 +13,21 @@ use Illuminate\Support\Facades\Validator;
 
 class ContactController extends Controller
 {
+    /**
+     * @return ContactCollection
+     */
     public function index()
     {
         return new ContactCollection(auth()->user()->contacts);
     }
 
 
-    public function store(Request $request)
+    /**
+     * @param StoreContact $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(StoreContact $request)
     {
-        $this->validateRequest($request);
-
         $contact = new Contact([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
@@ -33,7 +39,9 @@ class ContactController extends Controller
 
         $contact->save();
 
-        $contact->phoneNumbers()->createMany($request->input('phoneNumbers'));
+        $contact->phoneNumbers()->createMany($request->input('phone_numbers'));
+
+        return response()->json($contact->id, 200);
     }
 
     
@@ -53,12 +61,16 @@ class ContactController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    /**
+     * @param StoreContact $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(StoreContact $request, $id)
     {
         $contact = $this->getContact($id);
 
         if (isset($contact)) {
-            $this->validateRequest($request, $id);
             $contact->update($request->input());
             (new PhoneNumberController())->update($request, $contact->id);
 
@@ -69,6 +81,10 @@ class ContactController extends Controller
     }
 
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id)
     {
         $contact = $this->getContact($id);
@@ -80,40 +96,6 @@ class ContactController extends Controller
         }
 
         return response()->json('Not found', 404);
-    }
-
-
-    /**
-     * Validation for the request inputs
-     * The unique validation rule follows this syntax:
-     *      unique:table_name, column_name, ignored_id, ignored_column_name, (additional where clause) column_name, column_value
-     *      So we want to make sure the email is unique only where the user_id matches the current user's id, and the its own
-     *      id is ignored so it doesn't interfere with updating.
-     *      The same goes for phone number, we want it to be unique only for this contact_id and it should ignore its own id
-     *
-     * @param Request $request
-     * @param null $contactId
-     */
-    private function validateRequest(Request $request, $contactId = null)
-    {
-        $rules = [];
-        $rules['first_name'] = 'required|max:255';
-        $rules['last_name'] = 'required|max:255';
-        $rules['profile_photo'] = 'required|max:255';
-        $rules['favourite'] = 'required';
-        $rules['email'] = 'required|max:255|unique:contacts,email,' . $contactId . ',id,user_id,' . auth()->user()->id;
-
-        // only make phone number validation rules if the phone numbers are present
-        if (!empty($request->input('phoneNumbers'))) {
-            foreach ($request->input('phoneNumbers') as $index => $phoneNumber) {
-                $rules['phoneNumbers.' . $index . '.label'] = 'nullable|max:255';
-                $rules['phoneNumbers.' . $index . '.number'] =
-                    'required|max:255|unique:phone_numbers,number,' . $phoneNumber['id'] . ',id,contact_id,' . $contactId;
-            }
-            $rules['phoneNumbers.*.number'] = 'distinct';
-        }
-
-        Validator::make($request->all(), $rules)->validate();
     }
 
 

@@ -12,7 +12,7 @@ class PhoneNumberController extends Controller
 {
     public function update(Request $request, $contactId)
     {
-        $phoneNumbers = $request->input('phoneNumbers');
+        $phoneNumbers = $request->input('phone_numbers');
 
         foreach ($phoneNumbers as $phoneNumber) {
             $phoneNumber['contact_id'] = $contactId;
