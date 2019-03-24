@@ -41,7 +41,7 @@ class ContactController extends Controller
 
         $contact->phoneNumbers()->createMany($request->input('phone_numbers'));
 
-        return response()->json($contact->id, 200);
+        return response()->json($contact->id, 201);
     }
 
     
